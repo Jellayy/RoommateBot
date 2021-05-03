@@ -10,4 +10,4 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-CMD ["python", "discord_integration.py"]
+CMD ["python", "RoommateBot.py"]
